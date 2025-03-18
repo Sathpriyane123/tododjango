@@ -75,15 +75,25 @@ WSGI_APPLICATION = 'todoapp.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+import dj_database_url
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Check if running in Railway environment
+IS_RAILWAY = "DATABASE_URL" in os.environ
+
+if IS_RAILWAY:
+    # Use PostgreSQL in Railway
+    DATABASES = {
+        'default': dj_database_url.config(default=os.getenv("DATABASE_URL"))
     }
-}
-
-
+else:
+    # Use SQLite for local development
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
